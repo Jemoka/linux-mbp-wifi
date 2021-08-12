@@ -1,0 +1,38 @@
+From 5a9878327649fa448221fc25e7d0cbf55be306fb Mon Sep 17 00:00:00 2001
+From: Houjun Liu <hliu@shabang.cf>
+Date: Thu, 12 Aug 2021 09:57:54 -0700
+Subject: [PATCH] fix bluetooth for touchbarless devices
+
+Co-authored-by: Christoph Gysin <christoph.gysin@gmail.com>
+Co-authored-by: emergenz <franz.srambical@gmail.com>
+---
+ drivers/bluetooth/hci_bcm.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+index 3cd57fc56..f97de685e 100644
+--- a/drivers/bluetooth/hci_bcm.c
++++ b/drivers/bluetooth/hci_bcm.c
+@@ -261,10 +261,6 @@ static int bcm_gpio_set_power(struct bcm_device *dev, bool powered)
+ 	if (err)
+ 		goto err_txco_clk_disable;
+ 
+-	err = dev->set_device_wakeup(dev, powered);
+-	if (err)
+-		goto err_revert_shutdown;
+-
+ 	if (!powered && dev->res_enabled) {
+ 		clk_disable_unprepare(dev->txco_clk);
+ 		clk_disable_unprepare(dev->lpo_clk);
+@@ -284,8 +280,6 @@ static int bcm_gpio_set_power(struct bcm_device *dev, bool powered)
+ 
+ 	return 0;
+ 
+-err_revert_shutdown:
+-	dev->set_shutdown(dev, !powered);
+ err_txco_clk_disable:
+ 	if (powered && !dev->res_enabled)
+ 		clk_disable_unprepare(dev->txco_clk);
+-- 
+2.32.0
+
